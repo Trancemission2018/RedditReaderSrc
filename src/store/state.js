@@ -14,6 +14,7 @@ export default {
     ],
     currentPosts: [],
     currentAfter: null,
+    seenPosts: [],
     history: [],
     pages: [],
     firstId: null,

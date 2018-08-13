@@ -1,11 +1,11 @@
 <template>
 
     <v-container>
-        <div class="postTitle mb-2"> <strong>{{ post.title }}</strong>
+        <div class="postTitle mb-2"><strong>{{ post.title }}</strong>
             - <span class="teal pa-1">{{ post.author }}</span>
         </div>
         <img v-if="isImage" :src="imageUrl" width="500"/>
-        <span v-html="post.content" />
+        <span v-html="post.content"/>
         <hr/>
 
 
@@ -43,18 +43,26 @@
       }
     },
     mounted() {
-      console.log('And here are are')
-      axios.get('https://old.reddit.com/r/' + this.$route.params.subReddit + '/' + this.$route.params.postId + '/.json').then(response => {
+
+      let postId = this.$route.params.postId
+
+      axios.get('https://old.reddit.com/r/' + this.$route.params.subReddit + '/' + postId + '/.json').then(response => {
+
         this.post = response.data[0].data.children[0].data
         this.currentAuthor = this.post.author
 
         if (this.post.url !== '') {
-          console.log('URL ', this.parseUrl(this.post.url))
+          console.log('URL ', this.parseUrl(this.post.url)) // TODO refactor - this has side effects
         }
 
-        this.post.content = this.post.selftext.replace(/(?:\r\n|\r|\n)/g, '<br>');
+        this.post.content = this.post.selftext.replace(/(?:\r\n|\r|\n)/g, '<br>') // TODO - decode html?
 
         this.comments = this.getCommentsFromArray(response.data[1].data.children)
+
+        if (!this.$store.state.reddit.seenPosts.includes(postId)) {
+          this.$store.commit('ADD_SEEN_POST', postId)
+        }
+
       })
     },
     methods: {
@@ -75,13 +83,13 @@
             text += `
                     <div class="">
             `
-                if(this.currentAuthor === item.data.author){
-                  text += `<b><span class="teal pa-1">${this.currentAuthor}</span></b>`
-                }else{
-                  text += `<b>${item.data.author}</b>`
+            if (this.currentAuthor === item.data.author) {
+              text += `<b><span class="teal pa-1">${this.currentAuthor}</span></b>`
+            } else {
+              text += `<b>${item.data.author}</b>`
 
-                }
-                text+=`
+            }
+            text += `
                     ${item.data.ups}</div>
                     ${this.decodeHTMLEntities(item.data.body_html)}
                     </div>`
@@ -95,7 +103,7 @@
             }
           }
         })
-        return text;
+        return text
       },
       decodeHTMLEntities(text) {
 
@@ -108,18 +116,18 @@
             'gt': '>',
             'quot': '"',
             'nbsp': '\xa0'
-          };
+          }
           let entityPattern = /&([a-z]+);/ig
 
           // A single replace pass with a static RegExp is faster than a loop
           return text.replace(entityPattern, function (match, entity) {
-            entity = entity.toLowerCase();
+            entity = entity.toLowerCase()
             if (entities.hasOwnProperty(entity)) {
-              return entities[entity];
+              return entities[entity]
             }
             // Might as well return the original string if there is no matching entity (no replace)
             // This *should* work.
-            return match;
+            return match
           })
         } else {
           // No Text
@@ -141,7 +149,7 @@
           case 'jpeg':
             this.isImage = true
             this.imageUrl = url
-            break;
+            break
         }
 
         if (!this.isImage) {

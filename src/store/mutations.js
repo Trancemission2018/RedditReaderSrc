@@ -19,6 +19,9 @@ export default {
   ADD_PAGE(state, postId) {
     state.reddit.pages.push(postId)
   },
+  ADD_SEEN_POST(state, postId) {
+    state.reddit.seenPosts.push(postId)
+  },
   SET_TITLE(state, title) {
     state.title = title
   }
