@@ -1,24 +1,38 @@
 <template>
+    <div>
 
-    <v-container>
-        <div class="postTitle mb-2"><strong>{{ post.title }}</strong>
-            - <span class="teal pa-1">{{ post.author }}</span>
-        </div>
-        <img v-if="isImage" :src="imageUrl" width="500"/>
-        <span v-html="post.content"/>
-        <hr/>
+        <v-layout class="a-2" fluid>
 
+            <v-flex xs12>
 
-        <div class="pa-2 mb-2">
-            {{post.url }}
-            <a :href="post.url" target="_blank">
-                <v-icon small>link</v-icon>
-            </a>
-        </div>
-        <span
-                v-html="comments"
-        ></span>
-    </v-container>
+                <div class="text-xs-center pt-4" v-if="loading">
+                    <v-progress-circular
+                            indeterminate
+                            color="primary"
+                    ></v-progress-circular>
+                </div>
+            </v-flex>
+        </v-layout>
+
+        <v-container v-if="!loading">
+            <div class="postTitle mb-2"><strong>{{ post.title }}</strong>
+                - <span class="teal pa-1">{{ post.author }}</span>
+            </div>
+            <img v-if="isImage" :src="imageUrl" width="500"/>
+            <span v-html="post.content"/>
+            <hr/>
+
+            <div class="pa-2 mb-2">
+                {{post.url }}
+                <a :href="post.url" target="_blank">
+                    <v-icon small>link</v-icon>
+                </a>
+            </div>
+            <span
+                    v-html="comments"
+            ></span>
+        </v-container>
+    </div>
 
 </template>
 
@@ -34,6 +48,8 @@
       return {
         post: {},
         comments: [],
+        links: [],
+        loading: false,
         rootComments: [],
         depth: 0,
         currentAuthor: null,
@@ -46,6 +62,8 @@
 
       let postId = this.$route.params.postId
 
+      this.loading = true
+
       axios.get('https://old.reddit.com/r/' + this.$route.params.subReddit + '/' + postId + '/.json').then(response => {
 
         this.post = response.data[0].data.children[0].data
@@ -55,13 +73,19 @@
           console.log('URL ', this.parseUrl(this.post.url)) // TODO refactor - this has side effects
         }
 
-        this.post.content = this.post.selftext.replace(/(?:\r\n|\r|\n)/g, '<br>') // TODO - decode html?
+        let contentHtml = this.decodeHTMLEntities(this.post.selftext_html) // .replace(/(?:\r\n|\r|\n)/g, '<br>') // TODO - decode html?
+
+        this.post.content = contentHtml.replace(/href/g,' target="_blank" href')
+
+
 
         this.comments = this.getCommentsFromArray(response.data[1].data.children)
 
         if (!this.$store.state.reddit.seenPosts.includes(postId)) {
           this.$store.commit('ADD_SEEN_POST', postId)
         }
+
+        this.loading = false
 
       })
     },

@@ -10,6 +10,8 @@ import 'vuetify/dist/vuetify.min.css'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+Vue.use(require('vue-moment'));
+
 Vue.use(VueAxios, axios)
 
 import {sync} from 'vuex-router-sync'

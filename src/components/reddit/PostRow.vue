@@ -14,7 +14,7 @@
                 <v-list-tile-title><span :class="{'post-title-bold': !$store.getters.haveSeenPost(post.data.id)}">{{ post.data.title }}</span> -
                     <small>{{post.data.domain}}</small>
                 </v-list-tile-title>
-                <v-list-tile-sub-title>{{ post.data.num_comments}} Comments</v-list-tile-sub-title>
+                <v-list-tile-sub-title>{{ post.data.num_comments}} Comments {{ new Date(post.data.created_utc) * 1000  | moment("calendar") }}</v-list-tile-sub-title>
             </v-list-tile-content>
         </v-list-tile>
     </div>
@@ -26,6 +26,8 @@
       post: {}
     },
     mounted() {
+      console.log('Here')
+      console.log(this.$moment.unix(this.post.data.created_utc).calendar())
       console.log(this.$store.getters.haveSeenPost(this.post.data.id))
     },
     computed: {
