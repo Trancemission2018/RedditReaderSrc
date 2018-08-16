@@ -21,10 +21,6 @@ export default {
     lastId: null,
     subs: [
       {
-        name: 'Hacker News',
-        path: '/hackernews'
-      },
-      {
         name: 'CasualUk',
         path: '/reddit/sub/CasualUk'
       },

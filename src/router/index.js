@@ -4,6 +4,7 @@ import Start from '@/components/pages/Start'
 import RedditPost from '@/components/pages/RedditPost'
 import SubReddit from '@/components/reddit/SubReddit'
 import HackerTop from '@/components/hackernews/HackerTop'
+import HackerPost from '@/components/hackernews/HackerPost'
 
 Vue.use(Router)
 
@@ -33,6 +34,10 @@ export default new Router({
       name: 'Hacker News',
       component: HackerTop
     },
-
+    {
+      path: '/hackernews/post/:postId',
+      name: 'Hacker News',
+      component: HackerPost
+    }
   ]
 })
