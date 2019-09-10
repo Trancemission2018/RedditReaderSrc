@@ -25,6 +25,10 @@ export default {
         path: '/reddit/sub/CasualUk'
       },
       {
+        name: 'Factorio',
+        path: '/reddit/sub/factorio'
+      },
+      {
         name: 'BritishSuccess',
         path: '/reddit/sub/BritishSuccess'
       },
